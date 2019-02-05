@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kakaopay.todo.todolist.app.dao.TodoMapper">
+    <!-- 할일 총 개수를 가져온다. -->
+    <select id="selectTodoJobTotalCnt" resultType="long">
+        /* selectTodoJobTotalCnt */
+        SELECT
+            COUNT(*)
+        FROM JOB
+    </select>
+
+    <!-- 할일 전체 리스트를 가져온다. -->
+    <select id="selectTodoJobIdAllList" resultType="String">
+        /* selectTodoJobAllList */
+        SELECT
+            ID AS JOB_ID
+        FROM JOB
+        ORDER BY REG_DATE DESC
+    </select>
+
+    <resultMap id="todoJobListMap" type="com.kakaopay.todo.todolist.app.vo.TodoJobVo">
+        <result property="jobId" column="JOB_ID"/>
+        <result property="jobContent" column="JOB_CONTENT"/>
+        <result property="regDate" column="REG_DATE"/>
+        <result property="updDate" column="UPD_DATE"/>
+        <result property="completeYn" column="COMPLETE_YN"/>
+        <collection property="listReferJobId" column="JOB_ID" javaType="java.util.ArrayList" ofType="String" select="selectReferTodoJobList"/>
+        <collection property="listReferencedJobId" column="JOB_ID" javaType="java.util.ArrayList" ofType="String" select="selectReferencedTodoJobList"/>
+    </resultMap>
+
+    <!-- 할일 페이지별 리스트를 가져온다. -->
+    <select id="selectTodoJobList" resultMap="todoJobListMap">
+        /* selectTodoJobList */
+        SELECT
+            ID AS JOB_ID
+            , CONTENT AS JOB_CONTENT
+            , TO_CHAR(REG_DATE,'YYYY-MM-DD HH24:MI:ss') AS REG_DATE
+            , TO_CHAR(UPD_DATE,'YYYY-MM-DD HH24:MI:ss') AS UPD_DATE
+            , COMPLETE_YN
+        FROM JOB
+        ORDER BY REG_DATE DESC
+        LIMIT #{length} OFFSET #{offset}
+    </select>
+
+    <!-- 내가 참조한(수정을 위한) 일감 ID -->
+    <select id="selectReferTodoJobList" resultType="String">
+        /* selectReferTodoJobList */
+        SELECT
+            REF_ID
+        FROM JOB_REF
+        WHERE ID = #{jobID}
+        ORDER BY ID ASC
+    </select>
+
+    <!-- 내가 참조된(리스트에 보여지기 위한) 일감 ID -->
+    <select id="selectReferencedTodoJobList" resultType="String">
+        /* selectReferencedTodoJobList */
+        SELECT
+            ID
+        FROM JOB_REF
+        WHERE REF_ID = #{jobID}
+        ORDER BY ID ASC
+    </select>
+
+    <!-- 할일을 추가한다. -->
+    <insert id="insertTodoJob">
+        <selectKey resultType="string" keyProperty="jobInfo.jobId" order="BEFORE">
+            SELECT LPAD(JOB_SEQ.NEXTVAL, 4, '0') FROM DUAL
+        </selectKey>
+        /* insertTodoJob */
+        INSERT INTO JOB
+        (
+            ID
+            , CONTENT
+            , REG_DATE
+            , UPD_DATE
+            , COMPLETE_YN
+        )
+        VALUES
+        (
+            #{jobInfo.jobId}
+            , #{jobInfo.jobContent}
+            , CURRENT_TIMESTAMP()
+            , CURRENT_TIMESTAMP()
+            , 'N'
+        )
+    </insert>
+
+    <!-- 할일의 내용을 수정한다. -->
+    <update id="updateTodoJob">
+        /* updateTodoJob */
+        UPDATE JOB SET
+          CONTENT = #{jobInfo.jobContent}
+          , UPD_DATE = CURRENT_TIMESTAMP()
+        WHERE ID = #{jobId}
+    </update>
+
+    <!-- 할일의 완료 여부를 변경한다. -->
+    <update id="updateCompleteYn">
+        /* updateCompleteYn */
+        UPDATE JOB SET
+        COMPLETE_YN = #{jobInfo.completeYn}
+        WHERE ID = #{jobInfo.jobId}
+    </update>
+
+    <!-- 할일 참조 목록을 추가한다. -->
+    <insert id="insertTodoReferJobList">
+        /* insertTodoReferJobList */
+        INSERT INTO JOB_REF
+        (
+             ID
+            , REF_ID
+            , REG_DATE
+        )
+        SELECT
+             #{jobId}
+            , #{jobRefId}
+            , CURRENT_TIMESTAMP()
+        FROM DUAL
+        WHERE NOT EXISTS (
+            SELECT
+                1
+            FROM JOB_REF
+            WHERE ID = #{jobId}
+              AND REF_ID = #{jobRefId}
+        )
+    </insert>
+
+    <!-- 할일 참조 목록 중 현재 선택되지 않은 참조 값을 삭제한다. -->
+    <delete id="deleteUncheckedReferTodoJob">
+        /* deleteUncheckedReferTodoJob */
+        DELETE FROM JOB_REF
+        WHERE ID = #{jobId}
+        <if test="listReferJobId != null and listReferJobId.size != 0">
+            AND REF_ID NOT IN
+            <foreach item="item" index="index" collection="listReferJobId" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </delete>
+    
+    <select id="selectIsCompleteYnPossible" resultType="String">
+        /* selectIsCompleteYnPossible */
+        SELECT
+            DECODE(COUNT(*), 0, 'Y', 'N')
+        FROM JOB
+        /* 체크를 할 경우 */
+        <if test='jobInfo.completeYn != null and jobInfo.completeYn == "Y"'>
+            WHERE ID IN (
+                SELECT
+                  REF_ID
+                FROM JOB_REF
+                WHERE ID = #{jobInfo.jobId}
+            )
+            AND COMPLETE_YN = 'N'
+        </if>
+        /* 체크를 해제 할 경우 */
+        <if test='jobInfo.completeYn != null and jobInfo.completeYn == "N"'>
+            WHERE ID IN (
+                SELECT
+                    ID
+                FROM JOB_REF
+                WHERE REF_ID = #{jobInfo.jobId}
+            )
+            AND COMPLETE_YN = 'Y'
+        </if>
+    </select>
+</mapper>
