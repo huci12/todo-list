@@ -148,6 +148,7 @@ public class TodoService {
      * @param jobInfo
      * @return
      */
+    @Transactional
     public int updateCompleteYn(String jobId, TodoJobVo jobInfo){
         return todoMapper.updateCompleteYn(jobInfo);
     }

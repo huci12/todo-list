@@ -7,6 +7,10 @@ import lombok.ToString;
 
 import java.util.List;
 
+/**
+ * 공통 리스트 객체를 위한 Value Object
+ * @param <T>
+ */
 @Getter
 @Setter
 @ToString
