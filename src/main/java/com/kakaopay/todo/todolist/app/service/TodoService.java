@@ -83,15 +83,7 @@ public class TodoService {
     public int insertTodoJob(TodoJobVo jobInfo){
         int ret = todoMapper.insertTodoJob(jobInfo);
         if(ret > 0){
-            // 체크되지 않은 참조 할일을 지운다.
-            todoMapper.deleteUncheckedReferTodoJob(jobInfo.getJobId(), jobInfo.getListReferJobId());
-
-            log.debug("listReferJobId size: {}", jobInfo.getListReferJobId().size());
-
-            // 참조 할일을 추가한다. (*기존에 없을 경우에만)
-            jobInfo.getListReferJobId().forEach(jobRefId -> {
-                todoMapper.insertTodoReferJobList(jobInfo.getJobId(), jobRefId);
-            });
+            updateReferTodoJob(jobInfo.getJobId(), jobInfo.getListReferJobId());
         }
         return ret;
     }
@@ -103,19 +95,28 @@ public class TodoService {
      * @return
      */
     @Transactional
-    public int updateTodoJob(String jobId, @RequestBody @Validated TodoJobVo jobInfo){
+    public int updateTodoJob(String jobId, TodoJobVo jobInfo){
         int ret = todoMapper.updateTodoJob(jobId, jobInfo);
         if(ret > 0){
-            // 체크되지 않은 참조 할일을 지운다.
-            todoMapper.deleteUncheckedReferTodoJob(jobInfo.getJobId(), jobInfo.getListReferJobId());
-
-            log.debug("listReferJobId size: {}", jobInfo.getListReferJobId().size());
-
-            jobInfo.getListReferJobId().forEach(jobRefId -> {
-                todoMapper.insertTodoReferJobList(jobInfo.getJobId(), jobRefId);
-            });
+            updateReferTodoJob(jobId, jobInfo.getListReferJobId());
         }
         return ret;
+    }
+
+    /**
+     * 체크되지 않은 참조 일감 삭제 및 새로운 참조 일감 추가
+     * @param jobId
+     * @param listReferJobId
+     */
+    private void updateReferTodoJob(String jobId, List<String> listReferJobId){
+        // 체크되지 않은 참조 할일을 지운다.
+        todoMapper.deleteUncheckedReferTodoJob(jobId, listReferJobId);
+
+        log.debug("listReferJobId size: {}", listReferJobId.size());
+
+        listReferJobId.forEach(jobRefId -> {
+            todoMapper.insertTodoReferJobList(jobId, jobRefId);
+        });
     }
 
     /**
