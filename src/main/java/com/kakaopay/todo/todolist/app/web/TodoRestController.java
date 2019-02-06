@@ -47,7 +47,7 @@ public class TodoRestController {
             @ApiImplicitParam(name = "pageNum", value = "페이지 번호", required = true, dataType = "int", paramType = "path")
     })
     @GetMapping({"", "/{pageNum}"})
-    public ResponseEntity<ListVo> list(Optional<Integer> pageNum){
+    public ResponseEntity<ListVo> list(@PathVariable("pageNum") Optional<Integer> pageNum){
         if(pageNum.isPresent()){
             log.debug("current page number: {}", pageNum.get());
             return ResponseEntity.ok(todoService.getTodoJobList(pageNum.get()));
@@ -66,7 +66,7 @@ public class TodoRestController {
             @ApiImplicitParam(name = "jobId", value = "할일 ID", required = true, dataType = "String", paramType = "path")
     })
     @GetMapping("/job/{jobId}")
-    public ResponseEntity<TodoJobVo> detail(@PathVariable String jobId){
+    public ResponseEntity<TodoJobVo> detail(@PathVariable("jobId") String jobId){
         TodoJobVo todoJobInfo = todoService.getDetailTodoJob(jobId);
         if(todoJobInfo != null){
             return ResponseEntity.ok(todoService.getDetailTodoJob(jobId));
@@ -106,10 +106,29 @@ public class TodoRestController {
             @ApiImplicitParam(name = "todoJobVo", value = "할일 내용", required = true, dataType = "com.kakaopay.todo.todolist.app.vo.TodoJobVo", paramType = "body")
     })
     @PutMapping("/job/{jobId}")
-    public ResponseEntity<String> update(@PathVariable String jobId, @RequestBody @Validated(Update.class) TodoJobVo todoJobVo){
+    public ResponseEntity<String> update(@PathVariable("jobId") String jobId, @RequestBody @Validated(Update.class) TodoJobVo todoJobVo){
         int ret = todoService.updateTodoJob(jobId, todoJobVo);
         log.debug("todo job: {}", todoJobVo);
         log.info("Update cnt: {}", ret);
+        if(ret > 0){
+            return ResponseEntity.ok(null);
+        }
+        throw new BusinessException("TODO.COMMON.001");
+    }
+
+    /**
+     * 할일을 삭제한다.
+     * @param jobId
+     * @return
+     */
+    @ApiOperation(value="할일을 삭제한다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "jobId", value = "할일 ID", required = true, dataType = "String", paramType = "path")
+    })
+    @DeleteMapping("/job/{jobId}")
+    public ResponseEntity<String> delete(@PathVariable("jobId") String jobId){
+        int ret = todoService.deleteTodoJob(jobId);
+        log.debug("job id: {}", jobId);
         if(ret > 0){
             return ResponseEntity.ok(null);
         }
@@ -128,7 +147,7 @@ public class TodoRestController {
             @ApiImplicitParam(name = "todoJobVo", value = "할일 내용", required = true, dataType = "com.kakaopay.todo.todolist.app.vo.TodoJobVo", paramType = "body")
     })
     @PutMapping("/complete/{jobId}")
-    public ResponseEntity<String> complete(@PathVariable String jobId, @RequestBody TodoJobVo todoJobVo){
+    public ResponseEntity<String> complete(@PathVariable("jobId") String jobId, @RequestBody TodoJobVo todoJobVo){
         log.debug("todo job: {}", todoJobVo);
         String isPossible = todoService.getIsCompleteYnPossible(todoJobVo);
         // 완료 가능 혹은 불가능이 Exception을 발생할 상황은 아니므로 STATUS 200으로 던지고 추가로 플래그 값을 던진다.

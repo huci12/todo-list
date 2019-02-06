@@ -141,7 +141,8 @@
             </foreach>
         </if>
     </delete>
-    
+
+    <!-- 완료 혹은 완료 해제 가능 여부를 반환한다. -->
     <select id="selectIsCompleteYnPossible" resultType="String">
         /* selectIsCompleteYnPossible */
         SELECT
@@ -168,4 +169,10 @@
             AND COMPLETE_YN = 'Y'
         </if>
     </select>
+
+    <!-- 할일 삭제에 따른 참조한 할일 및 참조된 할일을 모두 삭제한다. -->
+    <delete id="deleteAllTodoRefJobList">
+        DELETE FROM JOB_REF
+        WHERE (ID = #{jobId} or REF_ID = #{job_id})
+    </delete>
 </mapper>
