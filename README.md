@@ -38,4 +38,12 @@
 | h2 databaase|               |
 | lombok      |               |
                   
-                  
+
+### Run Spring-boot Project 
+``` 
+# linux, mac os
+./mvnw spring-boot:run
+
+# windows
+./mvnw.cmd spring-boot:run
+```
