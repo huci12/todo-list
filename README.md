@@ -49,6 +49,9 @@
 ./mvnw.cmd spring-boot:run
 ```
 
+### 접속
+http://localhost:8080/todo-list 
+
 ### 프로젝트 구조 
 ```
 project
