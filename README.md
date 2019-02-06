@@ -29,7 +29,6 @@
 | jquery      | 3.2.1         |
 | handlebars  | 3.0.1         |
 | bootstrap   | 3.3.2         |
-| lombok      |               |
 
 ### Backend Dependencies
 | Dependence  |    Version    | 
@@ -39,4 +38,4 @@
 | h2 databaase|               |
 | lombok      |               |
                   
-
+                  
