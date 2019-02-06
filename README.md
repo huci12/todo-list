@@ -33,6 +33,7 @@
 ### Backend Dependencies
 | Dependence  |    Version    | 
 |-------------|---------------|
+| java        | 1.8           |
 | spring-boot | 2.1.2.RELEASE |
 | mybatis     |               |
 | h2 databaase|               |
@@ -48,7 +49,64 @@
 ./mvnw.cmd spring-boot:run
 ```
 
+### 프로젝트 구조 
+```
+project
+│   README.md
+│   file001.txt    
+│
+└───src
+│   │---main
+|   |   |─---java 
+│   │   |    └----com.kakaopay.todo.todolist 
+|   |   |         |  TodoListApplication.java
+|   |   |         |─app
+|   |   |         |  |─dao
+|   |   |         |  |   TodoMapper.java 
+|   |   |         |  |-service   
+│   │   |         |  |   TodoService.java
+|   |   |         |  |-vo
+|   |   |         |  |   TodoJobVo.java
+|   |   |         |  └─web
+|   |   |         |      TodoController.java
+|   |   |         |      TodoRestController.java
+|   |   |         |
+|   |   |         └─common
+|   |   |            |-config
+|   |   |            |   DataSourceConfig.java
+|   |   |            |-exception
+|   |   |            |   BusinessException.java
+|   |   |            |   ExceptionController.java
+|   |   |            |   ExceptionRestController.java
+|   |   |            |-validation
+|   |   |            |   Create.java
+|   |   |            |   Delete.java
+|   |   |            |   Update.java
+|   |   |            └-vo
+|   |   |                ErrorVo.java 
+|   |   |                ListVo.java
+|   |   |
+|   |   |-----resource
+|   |   |     |  application.properties
+|   |   |     |  logback-spring.xml
+|   |   |     |  messages.properties
+|   |   |     |  schema.sql
+|   |   |     └----mapper
+|   |   |            todoMapper.xml
+|   |   |-----webapp
+|               |-static
+|               |  └-js
+|               |      pagination.js
+|               |      todo.js
+|               └-WEB-INF
+|---pom.xml        └-views
+|                      list.jsp
+```
+
+
 ### 동작 동영상 링크
 https://github.com/rmsja10/todo-list/blob/master/todolist.mov
+
+
 
 
