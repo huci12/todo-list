@@ -136,6 +136,11 @@ var todo_module = todo_module || (function() {
      */
     var saveJob = function(){
         var jobId = $('#regist-form').find('#jobId').val();
+        var jobContent = $('#regist-form').find('#jobContent').val();
+        if($.trim(jobContent) == ''){
+            alert("할일의 내용을 입력하세요.");
+            return;
+        }
         // 수정
         if(jobId !== ''){
             updateJob();

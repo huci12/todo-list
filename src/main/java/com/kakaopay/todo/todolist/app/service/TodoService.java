@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
 
@@ -42,7 +43,13 @@ public class TodoService {
 
         // 결과가 있을 경우에만 리스트를 조회한다.
         if(totalCnt > 0){
-            listVo.setDatas(todoMapper.selectTodoJobList(offset, PAGE_PER_SIZE));
+            // ESCAPE 처리 (입력부터 막든 MessageConverter로 막든 해야할거 같음)
+            List<TodoJobVo> resultList = todoMapper.selectTodoJobList(offset, PAGE_PER_SIZE);
+            resultList.forEach(item->{
+                String content = item.getJobContent();
+                item.setJobContent(HtmlUtils.htmlEscape(content));
+            });
+            listVo.setDatas(resultList);
         }
 
         log.debug("selected todo list size : {}", totalCnt);

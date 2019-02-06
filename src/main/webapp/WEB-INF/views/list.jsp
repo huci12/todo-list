@@ -21,7 +21,7 @@
     <!-- 부가적인 테마 -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 
-    <link rel="stylesheet" href="/static/css/pagination.css">
+    <%--<link rel="stylesheet" href="/static/css/pagination.css">--%>
 
     <!-- IE8 에서 HTML5 요소와 미디어 쿼리를 위한 HTML5 shim 와 Respond.js -->
     <!-- WARNING: Respond.js 는 당신이 file:// 을 통해 페이지를 볼 때는 동작하지 않습니다. -->
@@ -72,6 +72,11 @@
         }
         .div-date {
             text-align: right;
+            margin-top: 3px;
+            margin-bottom: 3px;
+        }
+        .modal-body div.row {
+            margin-top: 5px;
         }
     </style>
 
@@ -146,7 +151,7 @@
         </div>
     </div>
 
-    <div id="modal-job" class="modal fade">
+    <div id="modal-job" class="modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -155,24 +160,33 @@
                 </div>
                 <div class="modal-body">
                     <form id="regist-form">
-                        할일
+                        <div class="row">
+                            <div class="col-xs-12">
+                                할일
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-xs-12">
                                 <input type="text" autocomplete="disabled" class ="form-control" id="jobContent" name="jobContent" placeholder="할일을 입력하세요.">
                             </div>
                         </div>
-                        참조
+                        <div class="row">
+                            <div class="col-xs-12">
+                                참조
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-xs-12">
                                 <input type="text" autocomplete="disabled" readonly="readonly" class ="form-control" id="strListReferJobId" name="strListReferJobId" placeholder="참조 일감">
-                                <div class="dropdown">
-                                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                                        일감
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul id="ul-job-checkbox" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                                    </ul>
-                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                                    일감
+                                    <span class="caret"></span>
+                                </button>
+                                <ul id="ul-job-checkbox" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"></ul>
                             </div>
                         </div>
                         <input type="hidden" id="jobId" name="jobId" value="">

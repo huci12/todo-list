@@ -59,11 +59,11 @@ public class TodoRestControllerTest {
      */
     @Test
     public void test002UpdateTodoJob() throws Exception{
-//        mockMvc.perform(put("/api/v1/todo-list/job/0008")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(updateTodoJob("0008")))
-//                .andDo(print())
-//                .andExpect(status().isOk());
+        mockMvc.perform(put("/api/v1/todo-list/job/0008")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateTodoJob("0008")))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     /**
@@ -72,10 +72,10 @@ public class TodoRestControllerTest {
      */
     @Test
     public void test003DeleteTodoJob() throws Exception{
-//        mockMvc.perform(delete("/api/v1/todo-list/job/0001")
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(status().isOk());
+        mockMvc.perform(delete("/api/v1/todo-list/job/0001")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     /**

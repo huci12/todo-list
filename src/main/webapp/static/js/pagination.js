@@ -22,18 +22,18 @@ var Pagination = {
     // add pages by number (from [s] to [f])
     Add: function(s, f) {
         for (var i = s; i < f; i++) {
-            Pagination.code += '<a>' + i + '</a>';
+            Pagination.code += '<li><a href="#" class="number">' + i + '</a></li>';
         }
     },
 
     // add last page with separator
     Last: function() {
-        Pagination.code += '<i>...</i><a>' + Pagination.size + '</a>';
+        Pagination.code += '<li><i>...</i><a href="#" class="number">' + Pagination.size + '</a></li>';
     },
 
     // add first page with separator
     First: function() {
-        Pagination.code += '<a>1</a><i>...</i>';
+        Pagination.code += '<li><a href="#" class="number">1</a></li><i>...</i>';
     },
 
 
@@ -75,16 +75,22 @@ var Pagination = {
 
     // binding pages
     Bind: function() {
-        var a = Pagination.e.getElementsByTagName('a');
-        for (var i = 0; i < a.length; i++) {
-            if (+a[i].innerHTML === Pagination.page) a[i].className = 'current';
-            a[i].addEventListener('click', Pagination.Click, false);
-        }
+        var $aArr = $(Pagination.e).find('li a.number'); //getElementsByTagName('a');
+        $.each($aArr, function(){
+            if($(this).text() == Pagination.page){
+                $(this).parent().addClass('active');
+            }
+            $(this).on('click', Pagination.Click);
+        });
+        // for (var i = 0; i < a.length; i++) {
+        //     if (+a[i].innerHTML === Pagination.page) $(a[i]).parent().addClass('current');
+        //     a[i].addEventListener('click', Pagination.Click, false);
+        // }
     },
 
     // write pagination
     Finish: function() {
-        Pagination.e.innerHTML = Pagination.code;
+        $(Pagination.e).find('li.number').replaceWith(Pagination.code);
         Pagination.code = '';
         Pagination.Bind();
     },
@@ -127,13 +133,17 @@ var Pagination = {
     Create: function(e) {
 
         var html = [
-            '<a>&#9668;</a>', // previous button
-            '<span></span>',  // pagination container
-            '<a>&#9658;</a>'  // next button
+            '<nav>',
+            '<ul class="pagination pagination-sm">',
+            '<li><a href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>', // previous button
+            '<li class="number"></li>',                                                               // pagination container
+            '<li><a href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>',     // next button
+            '</ul>',
+            '</nav>'
         ];
 
         e.innerHTML = html.join('');
-        Pagination.e = e.getElementsByTagName('span')[0];
+        Pagination.e = e;//.getElementsByClassName('number')[0];
         Pagination.Buttons(e);
     },
 
