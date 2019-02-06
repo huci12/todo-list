@@ -52,9 +52,7 @@
 ### 프로젝트 구조 
 ```
 project
-│   README.md
-│   file001.txt    
-│
+│   README.md   
 └───src
 │   │---main
 |   |   |─---java 
@@ -103,6 +101,44 @@ project
 |                      list.jsp
 ```
 
+### 문제 해결 전략 
+```
+1. 할일간의 관계를 위해 2개의 TABLE을 사용 
+  1) JOB 
+     -> 할일에 대한 정보를 등록  
+  2) JOB_REF
+     -> 할일 간의 관계를 등록. 할일 등록/수정과 동시에 참조 할일을 등록
+        
+2. 할일 완료 처리 시 JOB_REF를 조회하여 참조된 일감의 완료 여부를 확인함 
+   -> 완료 여부는 참조 관계(JOB_REF) 조회 후 나온 JOB의 ID 를 통해 JOB TABLE의 COMPLETE_YN 
+      조건을 넣어 조회하여 확인 
+        
+3. 할일 완료 해제 시 2번과 같이 JOB_REF를 조회하여 처리함. 
+   -> 해당 할일을 참조한 일감이 이미 완료 처리가 된 경우 해당 일감이 완료 해제가 될 경우 논리적으로 맞지 않으므로 
+      완료 해제가 되지 않도록 추가 처리를 함 
+```       
+
+### DB 스키마
+```
+CREATE TABLE JOB
+(
+    ID CHAR(4),
+    CONTENT VARCHAR2 (100),
+    REG_DATE TIMESTAMP,
+    UPD_DATE TIMESTAMP,
+    COMPLETE_YN CHAR(1)
+);
+
+
+CREATE TABLE JOB_REF
+(
+    ID CHAR(4),
+    REF_ID CHAR(4),
+    REG_DATE TIMESTAMP
+);
+
+CREATE SEQUENCE JOB_SEQ START WITH 1 INCREMENT BY 1;     
+```
 
 ### 동작 동영상 링크
 https://github.com/rmsja10/todo-list/blob/master/todo-list.mp4
