@@ -47,3 +47,8 @@
 # windows
 ./mvnw.cmd spring-boot:run
 ```
+
+### 동작 동영상 링크
+https://github.com/rmsja10/todo-list/blob/master/todolist.mov
+
+
