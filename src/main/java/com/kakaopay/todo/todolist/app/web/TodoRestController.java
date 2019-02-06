@@ -6,6 +6,7 @@ import com.kakaopay.todo.todolist.common.exception.BusinessException;
 import com.kakaopay.todo.todolist.common.validation.Create;
 import com.kakaopay.todo.todolist.common.validation.Update;
 import com.kakaopay.todo.todolist.common.vo.ListVo;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 /**
  * Rest 호출에 대한 처리를 위한 Controller
  */
 @RequestMapping("/api/v1/todo-list")
 @RestController
 @Slf4j
+@Api(value = "할일 API", description = "Kakaopay 과제 할일 API", basePath = "/")
 public class TodoRestController {
     @Autowired
     private TodoService todoService;
@@ -27,6 +31,7 @@ public class TodoRestController {
      * 전체 할일 ID 목록을 반환한다.
      * @return
      */
+    @ApiOperation(value="전체 할일 ID 목록을 반환한다.")
     @GetMapping("/ids")
     public ResponseEntity<ListVo> allIdList(){
         return ResponseEntity.ok(todoService.getTodoJobIdAllList());
@@ -37,10 +42,18 @@ public class TodoRestController {
      * @param pageNum
      * @return
      */
+    @ApiOperation(value="페이지 번호에 따른 할일 목록을 반환한다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNum", value = "페이지 번호", required = true, dataType = "int", paramType = "path")
+    })
     @GetMapping({"", "/{pageNum}"})
-    public ResponseEntity<ListVo> list(@PathVariable(name = "pageNum", required = false) int pageNum){
-        log.debug("current page number: {}", pageNum);
-        return ResponseEntity.ok(todoService.getTodoJobList(pageNum == 0 ? 1 : pageNum));
+    public ResponseEntity<ListVo> list(Optional<Integer> pageNum){
+        if(pageNum.isPresent()){
+            log.debug("current page number: {}", pageNum.get());
+            return ResponseEntity.ok(todoService.getTodoJobList(pageNum.get()));
+        }else{
+            return ResponseEntity.ok(todoService.getTodoJobList(1));
+        }
     }
 
     /**
@@ -48,6 +61,10 @@ public class TodoRestController {
      * @param jobId
      * @return
      */
+    @ApiOperation(value="할일 상세를 반환한다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "jobId", value = "할일 ID", required = true, dataType = "String", paramType = "path")
+    })
     @GetMapping("/job/{jobId}")
     public ResponseEntity<TodoJobVo> detail(@PathVariable String jobId){
         TodoJobVo todoJobInfo = todoService.getDetailTodoJob(jobId);
@@ -63,6 +80,10 @@ public class TodoRestController {
      * @param todoJobVo
      * @return
      */
+    @ApiOperation(value="할일을 등록한다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "todoJobVo", value = "할일 내용", required = true, dataType = "com.kakaopay.todo.todolist.app.vo.TodoJobVo", paramType = "body")
+    })
     @PostMapping("/job")
     public ResponseEntity<String> insert(@RequestBody @Validated(Create.class) TodoJobVo todoJobVo){
         int ret = todoService.insertTodoJob(todoJobVo);
@@ -79,6 +100,11 @@ public class TodoRestController {
      * @param todoJobVo
      * @return
      */
+    @ApiOperation(value="할일을 수정한다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "jobId", value = "할일 ID", required = true, dataType = "String", paramType = "path"),
+            @ApiImplicitParam(name = "todoJobVo", value = "할일 내용", required = true, dataType = "com.kakaopay.todo.todolist.app.vo.TodoJobVo", paramType = "body")
+    })
     @PutMapping("/job/{jobId}")
     public ResponseEntity<String> update(@PathVariable String jobId, @RequestBody @Validated(Update.class) TodoJobVo todoJobVo){
         int ret = todoService.updateTodoJob(jobId, todoJobVo);
@@ -96,6 +122,11 @@ public class TodoRestController {
      * @param todoJobVo
      * @return
      */
+    @ApiOperation(value="할일의 완료 여부를 수정한다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "jobId", value = "할일 ID", required = true, dataType = "String", paramType = "path"),
+            @ApiImplicitParam(name = "todoJobVo", value = "할일 내용", required = true, dataType = "com.kakaopay.todo.todolist.app.vo.TodoJobVo", paramType = "body")
+    })
     @PutMapping("/complete/{jobId}")
     public ResponseEntity<String> complete(@PathVariable String jobId, @RequestBody TodoJobVo todoJobVo){
         log.debug("todo job: {}", todoJobVo);

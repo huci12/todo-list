@@ -27,12 +27,14 @@ var todo_module = todo_module || (function() {
         var options = {
             type: "GET",
             dataType: "JSON",
+            cache : true,
             error: commonError
         };
         $.extend(options, newOptions);
         $.ajax({
             url: options.url,
             data: options.data,
+            cache : options.cache,
             success:function(data, status, settings){
                 if(options.success){
                     options.success(data, status, settings);
@@ -118,6 +120,7 @@ var todo_module = todo_module || (function() {
     var loadJobListCheckbox = function(){
         getCustomJson({
             url: "/api/v1/todo-list/ids",
+            cache : false,
             success: function(data){
                 //기존 값을 지우고 새로 받아온 데이터로 채운다!
                 $('#ul-job-checkbox').empty();
@@ -160,6 +163,7 @@ var todo_module = todo_module || (function() {
                 alert("등록이 완료 되었습니다.");
                 $('#modal-job').modal('hide');
                 movePage(1);
+                loadJobListCheckbox();
             }
         });
     };
@@ -229,10 +233,16 @@ var todo_module = todo_module || (function() {
     var createPagination = function(totalCnt, pageNum, targetId){
         var pagePerCnt = 10;
         var o = totalCnt % pagePerCnt;
-        var pageCnt = totalCnt / pagePerCnt;
-        if(o > 0){
-            pageCnt = pageCnt + 1;
+        var pageCnt = Math.floor(totalCnt / pagePerCnt);
+        if(totalCnt == 0){
+            pageCnt = 1;
+        }else{
+            if(o > 0){
+                pageCnt = pageCnt + 1;
+            }
         }
+        console.log("Page Cnt: " + pageCnt);
+        console.log("Page Num: " + pageNum);
 
         Pagination.Init(document.getElementById(targetId), {
             size: pageCnt,
@@ -263,7 +273,11 @@ var todo_module = todo_module || (function() {
                     var html = template(item);
                     $('#jobs').append(html);
                 });
-                createPagination(data.totalCnt, pageNum, "pagination");
+                //if(data.totalCnt != 0){
+                    createPagination(data.totalCnt, pageNum, "pagination");
+                //}else{
+                //    $('#pagination').empty();
+                //}
             }
         });
     };
@@ -309,6 +323,8 @@ var todo_module = todo_module || (function() {
             $('#regist-form').find('#jobContent').val('');
             $('#regist-form').find('input[name=strListReferJobId]').val('');
             $('#modal-job').modal('show');
+
+            $('#ul-job-checkbox').find('input[type=checkbox]').prop('checked', false);
         });
 
         /**
