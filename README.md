@@ -23,7 +23,15 @@
 * 단위테스트 필수, 통합테스트는 선택
 * README.md 파일에 문제해결 전략 및 프로젝트 빌드, 실행 방법 명시
 
-### Dependencies
+### Frontend Dependencies
+| Dependence  |    Version    | 
+|-------------|---------------|
+| jquery      | 3.2.1         |
+| handlebars  | 3.0.1         |
+| bootstrap   | 3.3.2         |
+| lombok      |               |
+
+### Backend Dependencies
 | Dependence  |    Version    | 
 |-------------|---------------|
 | spring-boot | 2.1.2.RELEASE |
